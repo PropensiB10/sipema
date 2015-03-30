@@ -1,0 +1,57 @@
+(sipema)root@propensi:/home/propensi/sipema/sipema# python manage.py makemigrations polls
+Migrations for 'polls':
+  0001_initial.py:
+    - Create model Food
+    - Create model Jadwal_kelas
+    - Create model Order
+    - Create model Order_item
+    - Create model Pembayaran
+    - Create model Review
+    - Create model User
+    - Add field dosen to review
+    - Add field food to review
+    - Add field sekretariat to pembayaran
+    - Add field dosen to order
+    - Add field dosen to jadwal_kelas
+(sipema)root@propensi:/home/propensi/sipema/sipema# python manage.py makemigrations polls
+No changes detected in app 'polls'
+(sipema)root@propensi:/home/propensi/sipema/sipema# python manage.py sqlmigrate polls 0001
+BEGIN;
+CREATE TABLE "polls_food" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "nama" varchar(30) NOT NULL, "total_rating" in                            teger NOT NULL);
+CREATE TABLE "polls_jadwal_kelas" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "hari" varchar(20) NOT NULL, "jammulai                            " time NOT NULL, "jamselesai" time NOT NULL, "ruangan" varchar(5) NOT NULL);
+CREATE TABLE "polls_order" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "waktu_order" datetime NOT NULL);
+CREATE TABLE "polls_order_item" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "qty" integer NOT NULL, "consumer_type"                             varchar(10) NOT NULL, "food_id" integer NOT NULL REFERENCES "polls_food" ("id"), "order_id" integer NOT NULL REFERENCES "p                            olls_order" ("id"));
+CREATE TABLE "polls_pembayaran" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "waktu_bayar" datetime NOT NULL, "total_                            pembayaran" integer NOT NULL);
+CREATE TABLE "polls_review" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "rating" integer NOT NULL, "komentar" varcha                            r(50) NOT NULL);
+CREATE TABLE "polls_user" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "username" varchar(20) NOT NULL UNIQUE, "passw                            ord" varchar(20) NOT NULL, "role" varchar(15) NOT NULL, "nama_user" varchar(45) NOT NULL);
+CREATE TABLE "polls_review__new" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "rating" integer NOT NULL, "komentar" v                            archar(50) NOT NULL, "dosen_id" integer NOT NULL REFERENCES "polls_user" ("id"));
+INSERT INTO "polls_review__new" ("rating", "komentar", "id", "dosen_id") SELECT "rating", "komentar", "id", NULL FROM "pol                            ls_review";
+DROP TABLE "polls_review";
+ALTER TABLE "polls_review__new" RENAME TO "polls_review";
+CREATE INDEX "polls_order_item_380b3cb5" ON "polls_order_item" ("food_id");
+CREATE INDEX "polls_order_item_69dfcb07" ON "polls_order_item" ("order_id");
+CREATE INDEX "polls_review_118b7989" ON "polls_review" ("dosen_id");
+CREATE TABLE "polls_review__new" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "rating" integer NOT NULL, "komentar" v                            archar(50) NOT NULL, "dosen_id" integer NOT NULL REFERENCES "polls_user" ("id"), "food_id" integer NOT NULL REFERENCES "po                            lls_food" ("id"));
+INSERT INTO "polls_review__new" ("rating", "komentar", "id", "food_id", "dosen_id") SELECT "rating", "komentar", "id", NUL                            L, "dosen_id" FROM "polls_review";
+DROP TABLE "polls_review";
+ALTER TABLE "polls_review__new" RENAME TO "polls_review";
+CREATE INDEX "polls_review_118b7989" ON "polls_review" ("dosen_id");
+CREATE INDEX "polls_review_380b3cb5" ON "polls_review" ("food_id");
+CREATE TABLE "polls_pembayaran__new" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "waktu_bayar" datetime NOT NULL, "t                            otal_pembayaran" integer NOT NULL, "sekretariat_id" integer NOT NULL REFERENCES "polls_user" ("id"));
+INSERT INTO "polls_pembayaran__new" ("waktu_bayar", "total_pembayaran", "id", "sekretariat_id") SELECT "waktu_bayar", "tot                            al_pembayaran", "id", NULL FROM "polls_pembayaran";
+DROP TABLE "polls_pembayaran";
+ALTER TABLE "polls_pembayaran__new" RENAME TO "polls_pembayaran";
+CREATE INDEX "polls_pembayaran_5d88ac27" ON "polls_pembayaran" ("sekretariat_id");
+CREATE TABLE "polls_order__new" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "waktu_order" datetime NOT NULL, "dosen_                            id" integer NOT NULL REFERENCES "polls_user" ("id"));
+INSERT INTO "polls_order__new" ("waktu_order", "dosen_id", "id") SELECT "waktu_order", NULL, "id" FROM "polls_order";
+DROP TABLE "polls_order";
+ALTER TABLE "polls_order__new" RENAME TO "polls_order";
+CREATE INDEX "polls_order_118b7989" ON "polls_order" ("dosen_id");
+CREATE TABLE "polls_jadwal_kelas__new" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "hari" varchar(20) NOT NULL, "jam                            mulai" time NOT NULL, "jamselesai" time NOT NULL, "ruangan" varchar(5) NOT NULL, "dosen_id" integer NOT NULL REFERENCES "p                            olls_user" ("id"));
+INSERT INTO "polls_jadwal_kelas__new" ("ruangan", "jamselesai", "hari", "dosen_id", "jammulai", "id") SELECT "ruangan", "j                            amselesai", "hari", NULL, "jammulai", "id" FROM "polls_jadwal_kelas";
+DROP TABLE "polls_jadwal_kelas";
+ALTER TABLE "polls_jadwal_kelas__new" RENAME TO "polls_jadwal_kelas";
+CREATE INDEX "polls_jadwal_kelas_118b7989" ON "polls_jadwal_kelas" ("dosen_id");
+
+COMMIT;
+(sipema)root@propensi:/home/propensi/sipema/sipema#
