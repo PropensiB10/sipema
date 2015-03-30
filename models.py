@@ -12,6 +12,10 @@ class Jadwal_kelas(models.Model):
 	jammulai = models.TimeField(max_length=15)
 	jamselesai = models.TimeField(max_length=45) 
 	ruangan = models.CharField(max_length=5)
+	
+class Food(models.Model):
+	nama = models.CharField(max_length=30)
+	total_rating = models.IntegerField(default=0)
 
 class Order(models.Model):
 	waktu_order = models.DateTimeField(max_length=20) 
@@ -23,10 +27,6 @@ class Order_item(models.Model):
 	food = models.ForeignKey(Food)
 	qty = models.IntegerField(default=0)
 	consumer_type = models.CharField(max_length=10)
-
-class Food(models.Model):
-	nama = models.CharField(max_length=30)
-	total_rating = models.IntegerField(default=0)
 
 class Review(models.Model):
 	food = models.ForeignKey(Food)
