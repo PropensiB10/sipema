@@ -76,4 +76,20 @@ Username (leave blank to use 'root'): propensi
 Email address: propensib10@gmail.com
 Password:
 Password (again):
-Superuser created successfully.
+Superuser created 
+
+(sipema)root@propensi:/home/propensi/sipema/sipema# python manage.py shell
+Python 3.2.3 (default, Feb 20 2013, 17:02:41)
+[GCC 4.7.2] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from polls import models
+>>> from polls.models import Food
+>>> f = Food(nama="Ayam Bakar", total_rating=0)
+>>> f.save()
+>>> f = Food(nama="Tongseng", total_rating=0)
+>>> f.save()
+>>> f = Food(nama="Rujak", total_rating=0)
+>>> f.save()
+>>> exit()
+(sipema)root@propensi:/home/propensi/sipema/sipema#
+
