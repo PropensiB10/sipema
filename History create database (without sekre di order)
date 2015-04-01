@@ -113,3 +113,10 @@ Django version 1.7.7, using settings 'sipema.settings'
 Starting development server at http://152.118.26.73:8080/
 Quit the server with CONTROL-C.
 
+from polls.models import Food
+from polls.models import User
+from polls.models import Order
+f = Food.objects.get(nama="Ayam Bakar")
+d = User.objects.get(username="admin1)
+r = Review.objects.create(food=f, rating=0, komentar="", dosen=d)
+r.save()
