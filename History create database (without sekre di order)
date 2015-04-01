@@ -93,3 +93,23 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> exit()
 (sipema)root@propensi:/home/propensi/sipema/sipema#
 
+menambahkan def __unicode__: pada models Food dan User
+
+(sipema)root@propensi:/home/propensi/sipema/sipema# python manage.py runserver
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 01, 2015 - 04:40:53
+Django version 1.7.7, using settings 'sipema.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+(sipema)root@propensi:/home/propensi/sipema/sipema# python manage.py runserver 152.118.26.73:8080
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 01, 2015 - 04:51:50
+Django version 1.7.7, using settings 'sipema.settings'
+Starting development server at http://152.118.26.73:8080/
+Quit the server with CONTROL-C.
+
