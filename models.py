@@ -1,60 +1,61 @@
-from django.db import models
+from django.contrib import admin
 
-class User(models.Model):
-	username = models.CharField(max_length=20, unique=True)
-	password = models.CharField(max_length=20)
-	role = models.CharField(max_length=15)
-	nama_user = models.CharField(max_length=45)
+# Register your models here.
+from polls.models import User
+from polls.models import Jadwal_kelas
+from polls.models import Food
+from polls.models import Order
+from polls.models import Order_item
+from polls.models import Review
+from polls.models import Pembayaran
 
-	def __str__(self):
-		return "%s " %(self.nama_user)
-	
-class Jadwal_kelas(models.Model):
-	dosen = models.ForeignKey(User)
-	hari = models.CharField(max_length=20)
-	jammulai = models.TimeField()
-	jamselesai = models.TimeField() 
-	ruangan = models.CharField(max_length=5)
-	
-	def __str__(self):
-		return " %s \ %s \ %s \ %s \ %s" %(self.dosen.nama_user, self.hari, self.jammulai, self.jamselesai, self.ruangan)
+class UserAdmin(admin.ModelAdmin):
+	list_display = ['username','nama_user','role']
+	search_fields = ['username','nama_user','role']
+	class Meta:
+		model = User
 
-class Order(models.Model):
-	waktu_order = models.DateTimeField(auto_now_add = True, auto_now=False) 
-	dosen = models.ForeignKey(User)
+class Jadwal_kelasAdmin(admin.ModelAdmin):
+	list_display = ['dosen','hari','jammulai','jamselesai','ruangan']
+	search_fields = ['dosen','hari','jammulai','jamselesai','ruangan']
+	class Meta:
+		model = Jadwal_kelas
+
+class FoodAdmin(admin.ModelAdmin):
+	list_display = ['nama','total_rating']
+	search_fields = ['nama','total_rating'] 
+	class Meta:
+		model = Food
+
+class OrderAdmin(admin.ModelAdmin):
+	list_display = ['waktu_order','dosen']
+	search_fields = ['waktu_order','dosen']
+	class Meta:
+		model = Order
+
+class Order_itemAdmin(admin.ModelAdmin):
+	list_display = ['order','food','qty','consumer_type']
+	search_fields = ['order','food','qty','consumer_type']
+	class Meta:
+		model = Order_item
+
+class ReviewAdmin(admin.ModelAdmin):
+	list_display = ['food','rating','komentar','dosen']
+	search_fields = ['food','rating','komentar','dosen']
+	class Meta:
+		model = Review
+
+class PembayaranAdmin(admin.ModelAdmin):
+	list_display = ['waktu_bayar','sekretariat']
+	search_fields = ['waktu_bayar','sekretariat']
+	class Meta:
+		model = Pembayaran
 		
-	def __str__(self):
-		return " %s \ %s " %(self.waktu_order, self.dosen.nama_user)
-		
-class Food(models.Model):
-	nama = models.CharField(max_length=100)
-	total_rating = models.IntegerField(default=0)
+admin.site.register(User, UserAdmin)
+admin.site.register(Jadwal_kelas, Jadwal_kelasAdmin)
+admin.site.register(Food, FoodAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(Order_item, Order_itemAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Pembayaran, PembayaranAdmin)
 
-	def __str__(self):
-		return self.nama
-	
-class Order_item(models.Model):
-	order = models.ForeignKey(Order)
-	food = models.ForeignKey(Food)
-	qty = models.IntegerField(default=1)
-	consumer_type = models.CharField(max_length=10)
-	
-	def __str__(self):
-		return " %s \ %s \ %s \ %s " %(self.order.id, self.order.dosen.nama_user, self.food.nama, self.qty)
-
-class Review(models.Model):
-	food = models.ForeignKey(Food)
-	rating = models.IntegerField(default=0) 
-	komentar = models.CharField(max_length=100, null=True, blank=True)
-	dosen = models.ForeignKey(User)
-	
-	def __str__(self):
-		return " %s \ %s \ %s" %(self.food.nama, self.rating, self.komentar)
-
-class Pembayaran(models.Model):
-	waktu_bayar = models.DateTimeField(auto_now_add = True, auto_now=False)
-	total_pembayaran = models.IntegerField(default=0)
-	sekretariat = models.ForeignKey(User) 
-	
-	def __str__(self):
-		return " %s \ %s " %(self.waktu_bayar, self.sekretariat.nama_user)
