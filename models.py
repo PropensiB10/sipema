@@ -45,7 +45,7 @@ class Order_item(models.Model):
 class Review(models.Model):
 	food = models.ForeignKey(Food)
 	rating = models.IntegerField(default=0) 
-	komentar = models.CharField(max_length=100, required="False")
+	komentar = models.CharField(max_length=100, null=True)
 	dosen = models.ForeignKey(User)
 	
 	def __unicode__(self):
