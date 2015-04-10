@@ -6,8 +6,8 @@ class User(models.Model):
 	role = models.CharField(max_length=15)
 	nama_user = models.CharField(max_length=45)
 
-	def __unicode__(self):
-		return " %s \ %s " %(self.username, self.nama_user)
+	def __str__(self):
+		return "%s " %(self.nama_user)
 	
 class Jadwal_kelas(models.Model):
 	dosen = models.ForeignKey(User)
@@ -16,14 +16,14 @@ class Jadwal_kelas(models.Model):
 	jamselesai = models.TimeField() 
 	ruangan = models.CharField(max_length=5)
 	
-	def __unicode__(self):
+	def __str__(self):
 		return " %s \ %s \ %s \ %s \ %s" %(self.dosen.nama_user, self.hari, self.jammulai, self.jamselesai, self.ruangan)
 
 class Order(models.Model):
 	waktu_order = models.DateTimeField(auto_now_add = True, auto_now=False) 
 	dosen = models.ForeignKey(User)
 		
-	def __unicode__(self):
+	def __str__(self):
 		return " %s \ %s " %(self.waktu_order, self.dosen.nama_user)
 		
 class Food(models.Model):
@@ -39,16 +39,16 @@ class Order_item(models.Model):
 	qty = models.IntegerField(default=1)
 	consumer_type = models.CharField(max_length=10)
 	
-	def __unicode__(self):
+	def __str__(self):
 		return " %s \ %s \ %s \ %s " %(self.order.id, self.order.dosen.nama_user, self.food.nama, self.qty)
 
 class Review(models.Model):
 	food = models.ForeignKey(Food)
 	rating = models.IntegerField(default=0) 
-	komentar = models.CharField(max_length=100, null=True,blank=True)
+	komentar = models.CharField(max_length=100, null=True, blank=True)
 	dosen = models.ForeignKey(User)
 	
-	def __unicode__(self):
+	def __str__(self):
 		return " %s \ %s \ %s" %(self.food.nama, self.rating, self.komentar)
 
 class Pembayaran(models.Model):
@@ -56,5 +56,5 @@ class Pembayaran(models.Model):
 	total_pembayaran = models.IntegerField(default=0)
 	sekretariat = models.ForeignKey(User) 
 	
-	def __unicode__(self):
+	def __str__(self):
 		return " %s \ %s " %(self.waktu_bayar, self.sekretariat.nama_user)
