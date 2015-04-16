@@ -1,61 +1,83 @@
-from django.contrib import admin
+from django.db import models
 
-# Register your models here.
-from polls.models import User
-from polls.models import Jadwal_kelas
-from polls.models import Food
-from polls.models import Order
-from polls.models import Order_item
-from polls.models import Review
-from polls.models import Pembayaran
+# Create your models here.
 
-class UserAdmin(admin.ModelAdmin):
-	list_display = ['username','nama_user','role']
-	search_fields = ['username','nama_user','role']
-	class Meta:
-		model = User
-
-class Jadwal_kelasAdmin(admin.ModelAdmin):
-	list_display = ['dosen','hari','jammulai','jamselesai','ruangan']
-	search_fields = ['dosen','hari','jammulai','jamselesai','ruangan']
-	class Meta:
-		model = Jadwal_kelas
-
-class FoodAdmin(admin.ModelAdmin):
-	list_display = ['nama','total_rating']
-	search_fields = ['nama','total_rating'] 
-	class Meta:
-		model = Food
-
-class OrderAdmin(admin.ModelAdmin):
-	list_display = ['waktu_order','dosen']
-	search_fields = ['waktu_order','dosen']
-	class Meta:
-		model = Order
-
-class Order_itemAdmin(admin.ModelAdmin):
-	list_display = ['order','food','qty','consumer_type']
-	search_fields = ['order','food','qty','consumer_type']
-	class Meta:
-		model = Order_item
-
-class ReviewAdmin(admin.ModelAdmin):
-	list_display = ['food','rating','komentar','dosen']
-	search_fields = ['food','rating','komentar','dosen']
-	class Meta:
-		model = Review
-
-class PembayaranAdmin(admin.ModelAdmin):
-	list_display = ['waktu_bayar','sekretariat']
-	search_fields = ['waktu_bayar','sekretariat']
-	class Meta:
-		model = Pembayaran
+class User(models.Model):
+	username = models.CharField(max_length=20, primary_key=True)
+	ROLE_TYPE = (('Sekretariat', 'Sekretariat'),('Dosen', 'Dosen'),('Admin','Admin'),)
+	role = models.CharField(max_length=20, choices=ROLE_TYPE, default='Dosen')
+	nama_user = models.CharField(max_length=45)
+	def __str__(self):
+		return self.nama_user
 		
-admin.site.register(User, UserAdmin)
-admin.site.register(Jadwal_kelas, Jadwal_kelasAdmin)
-admin.site.register(Food, FoodAdmin)
-admin.site.register(Order, OrderAdmin)
-admin.site.register(Order_item, Order_itemAdmin)
-admin.site.register(Review, ReviewAdmin)
-admin.site.register(Pembayaran, PembayaranAdmin)
+class JadwalKelas(models.Model):
+	dosen = models.ForeignKey(User, limit_choices_to={'role':"Dosen"})
+	LIST_HARI = (
+	('Senin','Senin'), ('Selasa','Selasa'), ('Rabu','Rabu'),
+	('Kamis','Kamis'), ('Jum\'at','Jum\'at'), ('Sabtu','Sabtu'),
+	('Minggu','Minggu'),)
+	hari = models.CharField(max_length=20, choices=LIST_HARI, default='Senin')
+	jam_mulai = models.TimeField(max_length=15)
+	jam_selesai = models.TimeField(max_length=45) 
+	ruangan = models.CharField(max_length=5)
+	class Meta:
+		unique_together = (('dosen','hari','jam_mulai','jam_selesai'),)
+	def __str__(self):
+		return " %s \ %s \ %s \ %s \ %s" %(self.dosen.nama_user, self.hari, self.jam_mulai, self.jam_selesai, self.ruangan)
 
+class Order(models.Model):
+	waktu_order = models.DateTimeField(max_length=20) 
+	dosen = models.ForeignKey(User, limit_choices_to={'role':"Dosen"}, related_name='dosen')
+	sekretariat = models.ForeignKey(User, limit_choices_to={'role':"Sekretariat"}, blank=True, null=True, related_name='sekretariat')
+	class Meta:
+		unique_together = (('dosen','waktu_order'),)
+	def __str__(self):
+		return " %s \ %s " %(self.waktu_order, self.dosen.nama_user)
+
+class Restaurant(models.Model):
+	nama_restoran = models.CharField(max_length=20, unique=True)
+	def __str__(self):
+		return " %s " %(self.nama_restoran)
+		
+class Food(models.Model):
+	restoran = models.ForeignKey(Restaurant)
+	nama_makanan = models.CharField(max_length=30, unique=True)
+	LIST_RATING = (
+	(0,0),(1,1),(2,2),(3,3),(4,4),(5,5),)
+	total_rating = models.PositiveIntegerField(choices=LIST_RATING, default=0)
+	def __str__(self):
+		return self.nama_makanan	
+
+class OrderItem(models.Model):
+	order = models.ForeignKey(Order)
+	food = models.ForeignKey(Food, blank=True, null=True)#yang sekretariat bisa karena ada related name sekretariat, yang ini ga ada nama_makanan
+	LIST_KUANTITAS = ((1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10),)
+	kuantitas = models.PositiveIntegerField(choices=LIST_KUANTITAS, default=1)
+	LIST_TIPE = (
+	('Dosen','Dosen'), ('Asisten','Asisten'),)
+	tipe_konsumen = models.CharField(max_length=20, choices=LIST_TIPE, default="Dosen")
+	permintaan_lain = models.CharField(max_length=200, null=True, blank=True)
+	class Meta:
+		unique_together = (('order','food','tipe_konsumen'),)
+	def __str__(self):
+		return " %s \ %s \ %s \ %s \ %s " %(self.order.waktu_order, self.order.dosen.nama_user, self.food, self.kuantitas, self.permintaan_lain)	
+	
+class Review(models.Model):
+	food = models.ForeignKey(Food)
+	LIST_RATING = (
+	(0,0),(1,1),(2,2),(3,3),(4,4),(5,5),)
+	rating = models.PositiveIntegerField(choices=LIST_RATING, default=0) 
+	komentar = models.TextField()
+	dosen = models.ForeignKey(User, limit_choices_to={'role':"Dosen"})
+	class Meta:
+		unique_together = (('food','dosen'),)
+	def __str__(self):
+		return " %s \ %s \%s \ %s" %(self.food.nama_makanan, self.dosen.nama_user, self.rating, self.komentar)
+	
+
+class Pembayaran(models.Model):
+	waktu_bayar = models.DateTimeField(max_length=10, primary_key=True)
+	total_pembayaran = models.PositiveIntegerField(default=0)
+	sekretariat = models.ForeignKey(User, limit_choices_to={'role':"Sekretariat"}) 
+	def __str__(self):
+		return " %s \ %s " %(self.waktu_bayar, self.sekretariat.nama_user)
