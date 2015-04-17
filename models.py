@@ -68,7 +68,7 @@ class Review(models.Model):
 	LIST_RATING = (
 	(0,0),(1,1),(2,2),(3,3),(4,4),(5,5),)
 	rating = models.PositiveIntegerField(choices=LIST_RATING, default=0) 
-	komentar = models.TextField()
+	komentar = models.TextField(null=True, blank=True)
 	dosen = models.ForeignKey(User, limit_choices_to={'role':"Dosen"})
 	class Meta:
 		unique_together = (('food','dosen'),)
