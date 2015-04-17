@@ -42,8 +42,7 @@ class Restaurant(models.Model):
 class Food(models.Model):
 	restoran = models.ForeignKey(Restaurant)
 	nama_makanan = models.CharField(max_length=30)
-	LIST_RATING = (
-	(0,0),(1,1),(2,2),(3,3),(4,4),(5,5),)
+	LIST_RATING = ((1,1),(2,2),(3,3),(4,4),(5,5),)
 	total_rating = models.PositiveIntegerField(choices=LIST_RATING, default=0)
 	class Meta:
 		unique_together = (('restoran','nama_makanan'),)
